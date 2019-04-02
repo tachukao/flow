@@ -21,6 +21,17 @@ module Make (P : PT) = struct
         ; bp = Algodiff.D.Mat.ones 1 1
         ; up = Algodiff.D.Mat.ones 2 1 } )
 
+  let reset_prms () =
+    Array.iter
+      (fun l ->
+        l.w <- Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 2 1;
+        l.u <- Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 2 1;
+        l.b <- Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 1 1;
+        l.wp <- Algodiff.D.Mat.ones 2 1;
+        l.up <- Algodiff.D.Mat.ones 2 1;
+        l.bp <- Algodiff.D.Mat.ones 1 1 )
+      prms
+
   let onestep z l =
     let open Algodiff.D.Maths in
     let w = l.w in
@@ -32,7 +43,6 @@ module Make (P : PT) = struct
     let psi = (F 1. - sqr r) * w in
     let ld = F 1. + (transpose u *@ psi) |> abs |> log in
     z, ld
-
 
   let tag_layer t l =
     l.w <- Algodiff.D.make_reverse l.w t;

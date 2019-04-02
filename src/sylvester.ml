@@ -1,6 +1,10 @@
 open Owl
 open Types
 
+let print_dim x =
+  let d1, d2 = Algodiff.D.Mat.shape x in
+  Printf.printf "%i, %i\n" d1 d2
+
 module Make (P : PT) = struct
   let flow_length = P.flow_length
 
@@ -21,20 +25,31 @@ module Make (P : PT) = struct
         ; up = Algodiff.D.Mat.ones 2 2
         ; bp = Algodiff.D.Mat.ones 2 1 } )
 
+  let reset_prms () =
+    Array.iter
+      (fun l ->
+        l.w <- Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 2 2;
+        l.u <- Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 2 2;
+        l.b <- Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 2 1;
+        l.wp <- Algodiff.D.Mat.ones 2 2;
+        l.up <- Algodiff.D.Mat.ones 2 2;
+        l.bp <- Algodiff.D.Mat.ones 2 1 )
+      prms
+
   let onestep z l =
     let open Algodiff.D.Maths in
     let w = l.w in
-    let u = l.w in
-    let b = l.w in
-    let q, r = qr w in
+    let u = l.u in
+    let b = l.b in
     let u = triu u in
-    let a = (u *@ transpose q *@ z) + b in
+    let q, r = qr w in
+    let a = (u *@ (transpose q) *@ z) + b in
     let x = tanh a in
     let z = z + (w *@ x) in
     let ld =
-      let h = F 1. - sqr x in
+      let h = (F 1. - sqr x) in
       let d = transpose (diag u * diag r) in
-      (h * d) + F 1. |> abs |> log
+      F 1. + (h * d) |> abs |> log
     in
     z, ld
 

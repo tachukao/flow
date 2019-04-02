@@ -1,7 +1,7 @@
 (library
-   (name density)
+   (name potentials)
    (libraries owl)
-   (modules density))
+   (modules potentials))
 
 (library
    (name types)
@@ -15,10 +15,10 @@
  
 (library
    (name planar)
-   (libraries owl density types)
+   (libraries owl types)
    (modules planar))
  
 (library
    (name sylvester)
-   (libraries owl density types)
+   (libraries owl types)
    (modules sylvester))
