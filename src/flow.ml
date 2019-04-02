@@ -13,6 +13,9 @@ let flow (module F : FlowT) z =
   in
   run 0 z (F 0.)
 
+let sample (module F : FlowT) n_samples =
+  flow (module F) Algodiff.D.Mat.(gaussian 2 n_samples) |> fst
+
 let train
     ?(max_iter = 1000)
     ?(print_every = 100)
