@@ -6,33 +6,37 @@ module Make (P : PT) = struct
 
   type layer =
     { mutable w : Algodiff.D.t
-    ; mutable b : Algodiff.D.t
     ; mutable u : Algodiff.D.t
+    ; mutable b : Algodiff.D.t
     ; mutable wp : Algodiff.D.t
-    ; mutable bp : Algodiff.D.t
-    ; mutable up : Algodiff.D.t }
+    ; mutable up : Algodiff.D.t
+    ; mutable bp : Algodiff.D.t }
 
   let prms =
     Array.init flow_length (fun _ ->
-        { w = Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 2 1
-        ; b = Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 1 1
-        ; u = Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 2 1
-        ; wp = Algodiff.D.Mat.ones 2 1
-        ; bp = Algodiff.D.Mat.ones 1 1
-        ; up = Algodiff.D.Mat.ones 2 1 } )
+        { w = Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 2 2
+        ; u = Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 2 2
+        ; b = Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 2 1
+        ; wp = Algodiff.D.Mat.ones 2 2
+        ; up = Algodiff.D.Mat.ones 2 2
+        ; bp = Algodiff.D.Mat.ones 2 1 } )
 
   let onestep z l =
     let open Algodiff.D.Maths in
     let w = l.w in
-    let b = l.b in
-    let u = l.u in
-    let a = (transpose w *@ z) + b in
-    let r = tanh a in
-    let z = z + (r * u) in
-    let psi = (F 1. - sqr r) * w in
-    let ld = F 1. + (transpose u *@ psi) |> abs |> log in
+    let u = l.w in
+    let b = l.w in
+    let q, r = qr w in
+    let u = triu u in
+    let a = (u *@ transpose q *@ z) + b in
+    let x = tanh a in
+    let z = z + (w *@ x) in
+    let ld =
+      let h = F 1. - sqr x in
+      let d = transpose (diag u * diag r) in
+      (h * d) + F 1. |> abs |> log
+    in
     z, ld
-
 
   let tag_layer t l =
     l.w <- Algodiff.D.make_reverse l.w t;

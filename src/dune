@@ -3,7 +3,22 @@
    (libraries owl)
    (modules density))
 
-(executable
-   (name planar_flow)
-   (libraries owl density)
-   (modules planar_flow))
+(library
+   (name types)
+   (libraries owl)
+   (modules types)) 
+
+(library
+   (name flow)
+   (libraries types owl)
+   (modules flow)) 
+ 
+(library
+   (name planar)
+   (libraries owl density types)
+   (modules planar))
+ 
+(library
+   (name sylvester)
+   (libraries owl density types)
+   (modules sylvester))
