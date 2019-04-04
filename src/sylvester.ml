@@ -6,6 +6,7 @@ let print_dim x =
   Printf.printf "%i, %i\n" d1 d2
 
 module Make (P : PT) = struct
+  let dim = P.dim
   let flow_length = P.flow_length
 
   type layer =
@@ -18,22 +19,22 @@ module Make (P : PT) = struct
 
   let prms =
     Array.init flow_length (fun _ ->
-        { w = Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 2 2
-        ; u = Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 2 2
-        ; b = Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 2 1
-        ; wp = Algodiff.D.Mat.ones 2 2
-        ; up = Algodiff.D.Mat.ones 2 2
-        ; bp = Algodiff.D.Mat.ones 2 1 } )
+        { w = Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 dim dim
+        ; u = Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 dim dim
+        ; b = Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 dim 1
+        ; wp = Algodiff.D.Mat.ones dim dim
+        ; up = Algodiff.D.Mat.ones dim dim
+        ; bp = Algodiff.D.Mat.ones dim 1 } )
 
   let reset_prms () =
     Array.iter
       (fun l ->
-        l.w <- Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 2 2;
-        l.u <- Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 2 2;
-        l.b <- Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 2 1;
-        l.wp <- Algodiff.D.Mat.ones 2 2;
-        l.up <- Algodiff.D.Mat.ones 2 2;
-        l.bp <- Algodiff.D.Mat.ones 2 1 )
+        l.w <- Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 dim dim;
+        l.u <- Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 dim dim;
+        l.b <- Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 dim 1;
+        l.wp <- Algodiff.D.Mat.ones dim dim;
+        l.up <- Algodiff.D.Mat.ones dim dim;
+        l.bp <- Algodiff.D.Mat.ones dim 1 )
       prms
 
   let onestep z l =

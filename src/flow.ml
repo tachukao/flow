@@ -14,7 +14,7 @@ let flow (module F : FlowT) z =
   run 0 z (F 0.)
 
 let sample (module F : FlowT) n_samples =
-  flow (module F) Algodiff.D.Mat.(gaussian 2 n_samples) |> fst
+  flow (module F) Algodiff.D.Mat.(gaussian F.dim n_samples) |> fst
 
 let train
     ?(max_iter = 1000)
@@ -27,7 +27,7 @@ let train
     let open Algodiff.D in
     if iter < max_iter && loss > F (-1.)
     then (
-      let z = Mat.gaussian 2 batch_size in
+      let z = Mat.gaussian F.dim batch_size in
       let t = tag () in
       Array.iter (fun l -> F.tag_layer t l) F.prms;
       let loss =

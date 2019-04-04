@@ -2,11 +2,13 @@ open Owl
 
 module type PT = sig
   val flow_length : int
+  val dim : int
 end
 
 module type FlowT = sig
   type layer
 
+  val dim : int
   val flow_length : int
   val prms : layer array
   val onestep : Algodiff.D.t -> layer -> Algodiff.D.t * Algodiff.D.t
