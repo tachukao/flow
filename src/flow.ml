@@ -1,5 +1,9 @@
 open Owl
 open Types
+module Planar = Planar
+module Sylvester = Sylvester
+module Types = Types
+module Potentials = Potentials
 
 let flow (module F : FlowT) z =
   let rec run i z lj =
