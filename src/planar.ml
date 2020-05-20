@@ -11,7 +11,8 @@ module Make (P : PT) = struct
     ; mutable u : Algodiff.D.t
     ; mutable wp : Algodiff.D.t
     ; mutable bp : Algodiff.D.t
-    ; mutable up : Algodiff.D.t }
+    ; mutable up : Algodiff.D.t
+    }
 
   let prms =
     Array.init flow_length (fun _ ->
@@ -20,7 +21,9 @@ module Make (P : PT) = struct
         ; u = Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 dim 1
         ; wp = Algodiff.D.Mat.ones dim 1
         ; bp = Algodiff.D.Mat.ones 1 1
-        ; up = Algodiff.D.Mat.ones dim 1 } )
+        ; up = Algodiff.D.Mat.ones dim 1
+        })
+
 
   let reset_prms () =
     Array.iter
@@ -30,8 +33,9 @@ module Make (P : PT) = struct
         l.b <- Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 1 1;
         l.wp <- Algodiff.D.Mat.ones dim 1;
         l.up <- Algodiff.D.Mat.ones dim 1;
-        l.bp <- Algodiff.D.Mat.ones 1 1 )
+        l.bp <- Algodiff.D.Mat.ones 1 1)
       prms
+
 
   let onestep z l =
     let open Algodiff.D.Maths in
@@ -45,10 +49,12 @@ module Make (P : PT) = struct
     let ld = F 1. + (transpose u *@ psi) |> abs |> log in
     z, ld
 
+
   let tag_layer t l =
     l.w <- Algodiff.D.make_reverse l.w t;
     l.u <- Algodiff.D.make_reverse l.u t;
     l.b <- Algodiff.D.make_reverse l.b t
+
 
   let update_layer eta =
     let open Algodiff.D in

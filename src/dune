@@ -1,24 +1,24 @@
 (library
-   (name potentials)
-   (libraries owl)
-   (modules potentials))
+ (name potentials)
+ (libraries owl)
+ (modules potentials))
 
 (library
-   (name types)
-   (libraries owl)
-   (modules types)) 
+ (name types)
+ (libraries owl)
+ (modules types))
 
 (library
-   (name flow)
-   (libraries types owl)
-   (modules flow)) 
- 
+ (name flow)
+ (libraries types owl)
+ (modules flow))
+
 (library
-   (name planar)
-   (libraries owl types)
-   (modules planar))
- 
+ (name planar)
+ (libraries owl types)
+ (modules planar))
+
 (library
-   (name sylvester)
-   (libraries owl types)
-   (modules sylvester))
+ (name sylvester)
+ (libraries owl types)
+ (modules sylvester))

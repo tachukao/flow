@@ -5,6 +5,7 @@ let print_dim x =
   let d1, d2 = Algodiff.D.Mat.shape x in
   Printf.printf "%i, %i\n" d1 d2
 
+
 module Make (P : PT) = struct
   let dim = P.dim
   let flow_length = P.flow_length
@@ -15,7 +16,8 @@ module Make (P : PT) = struct
     ; mutable b : Algodiff.D.t
     ; mutable wp : Algodiff.D.t
     ; mutable up : Algodiff.D.t
-    ; mutable bp : Algodiff.D.t }
+    ; mutable bp : Algodiff.D.t
+    }
 
   let prms =
     Array.init flow_length (fun _ ->
@@ -24,7 +26,9 @@ module Make (P : PT) = struct
         ; b = Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 dim 1
         ; wp = Algodiff.D.Mat.ones dim dim
         ; up = Algodiff.D.Mat.ones dim dim
-        ; bp = Algodiff.D.Mat.ones dim 1 } )
+        ; bp = Algodiff.D.Mat.ones dim 1
+        })
+
 
   let reset_prms () =
     Array.iter
@@ -34,8 +38,9 @@ module Make (P : PT) = struct
         l.b <- Algodiff.D.Mat.uniform ~a:(-0.01) ~b:0.01 dim 1;
         l.wp <- Algodiff.D.Mat.ones dim dim;
         l.up <- Algodiff.D.Mat.ones dim dim;
-        l.bp <- Algodiff.D.Mat.ones dim 1 )
+        l.bp <- Algodiff.D.Mat.ones dim 1)
       prms
+
 
   let onestep z l =
     let open Algodiff.D.Maths in
@@ -44,20 +49,22 @@ module Make (P : PT) = struct
     let b = l.b in
     let u = triu u in
     let q, r = Algodiff.D.Linalg.qr w in
-    let a = (u *@ (transpose q) *@ z) + b in
+    let a = (u *@ transpose q *@ z) + b in
     let x = tanh a in
     let z = z + (w *@ x) in
     let ld =
-      let h = (F 1. - sqr x) in
+      let h = F 1. - sqr x in
       let d = transpose (diag u * diag r) in
       F 1. + (h * d) |> abs |> log
     in
     z, ld
 
+
   let tag_layer t l =
     l.w <- Algodiff.D.make_reverse l.w t;
     l.u <- Algodiff.D.make_reverse l.u t;
     l.b <- Algodiff.D.make_reverse l.b t
+
 
   let update_layer eta =
     let open Algodiff.D in
